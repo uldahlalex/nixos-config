@@ -17,10 +17,14 @@ in
 
   dconf.settings = {
     "org/gnome/shell" = {
-      enabled-extensions = [ "clipboard-indicator@tudmotu.com" ];
+      enabled-extensions = [
+        "clipboard-indicator@tudmotu.com"
+        "gsconnect@andyholmes.github.io"
+      ];
     };
     "org/gnome/shell/extensions/clipboard-indicator" = {
-      toggle-menu = [ "<Super>v" ];
+      # <Super>v collides with GNOME's built-in toggle-message-tray shortcut
+      toggle-menu = [ "<Super><Shift>v" ];
       history-size = 50;
     };
   };

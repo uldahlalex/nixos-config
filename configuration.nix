@@ -17,6 +17,10 @@
   networking.networkmanager.enable = true;
   nixpkgs.config.allowUnfree = true;
 
+  # GSConnect (KDE Connect) discovery + pairing
+  networking.firewall.allowedTCPPortRanges = [{ from = 1714; to = 1764; }];
+  networking.firewall.allowedUDPPortRanges = [{ from = 1714; to = 1764; }];
+
   services.displayManager.gdm.enable = true;
   services.desktopManager.gnome.enable = true;
   services.displayManager.defaultSession = "gnome";
