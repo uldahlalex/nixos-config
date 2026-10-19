@@ -29,6 +29,19 @@ in
     };
   };
 
+  home.sessionPath = [
+    # JetBrains Toolbox writes CLI launcher scripts (e.g. `rider`) here, but
+    # Home Manager regenerates .bashrc on every switch, so Toolbox's own
+    # PATH edit to the rc file never sticks. Add it declaratively instead.
+    "$HOME/.local/share/JetBrains/Toolbox/scripts"
+  ];
+
+  home.sessionVariables = {
+    # Run Rider (and other JBR-based JetBrains IDEs) on native Wayland
+    # instead of XWayland.
+    JDK_JAVA_OPTIONS = "-Dawt.toolkit.name=WLToolkit";
+  };
+
   home.file.".oh-my-bash".source = oh-my-bash;
 
   programs.bash = {
@@ -37,6 +50,7 @@ in
       export OSH="$HOME/.oh-my-bash"
       OSH_THEME="font"
       source "$OSH/oh-my-bash.sh"
+      export EDITOR='code --wait'
     '';
   };
 }
