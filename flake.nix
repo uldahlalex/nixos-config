@@ -17,13 +17,12 @@
         inherit system;
         config.allowUnfree = true;
       };
-    in
-    {
-      nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
+      mkHost = hostModule: nixpkgs.lib.nixosSystem {
         inherit system;
         specialArgs = { inherit pkgs-unstable; };
         modules = [
           ./configuration.nix
+          hostModule
           home-manager.nixosModules.home-manager
           {
             home-manager.useGlobalPkgs = true;
@@ -32,5 +31,9 @@
           }
         ];
       };
+    in
+    {
+      nixosConfigurations.nixos = mkHost ./hosts/nixos/default.nix;
+      nixosConfigurations.t14 = mkHost ./hosts/t14/default.nix;
     };
 }
