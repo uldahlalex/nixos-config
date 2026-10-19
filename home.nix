@@ -21,11 +21,54 @@ in
         "clipboard-indicator@tudmotu.com"
         "gsconnect@andyholmes.github.io"
       ];
+      favorite-apps = [ "org.gnome.Nautilus.desktop" ];
     };
     "org/gnome/shell/extensions/clipboard-indicator" = {
       # <Super>v collides with GNOME's built-in toggle-message-tray shortcut
       toggle-menu = [ "<Super><Shift>v" ];
       history-size = 50;
+      cache-size = 512;
+      notify-on-clear = false;
+      notify-on-cycle = false;
+      open-at-cursor = true;
+      preview-size = 100;
+    };
+    "org/gnome/settings-daemon/plugins/media-keys" = {
+      custom-keybindings = [
+        "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/"
+      ];
+    };
+    "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0" = {
+      binding = "<Super>q";
+      command = "kgx";
+      name = "Launch terminal";
+    };
+    "org/gnome/settings-daemon/plugins/color" = {
+      night-light-schedule-automatic = false;
+    };
+    "org/gnome/desktop/wm/keybindings" = {
+      close = [ "<Alt>F4" "<Super><Alt>space" ];
+      minimize = [ "<Super>Page_Down" ];
+      switch-to-workspace-right = [ "<Super>KP_Next" "<Super><Alt>Right" "<Control><Alt>Right" ];
+    };
+    "org/gnome/desktop/wm/preferences" = {
+      num-workspaces = 1;
+      resize-with-right-button = true;
+    };
+    "org/gnome/mutter" = {
+      dynamic-workspaces = false;
+    };
+    "org/gnome/desktop/interface" = {
+      enable-hot-corners = false;
+    };
+    "org/gnome/desktop/notifications" = {
+      show-banners = false;
+      show-in-lock-screen = false;
+    };
+    "org/gnome/desktop/peripherals/touchpad" = {
+      edge-scrolling-enabled = false;
+      two-finger-scrolling-enabled = true;
+      natural-scroll = false;
     };
   };
 
