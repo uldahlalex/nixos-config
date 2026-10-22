@@ -19,6 +19,13 @@ sudo nixos-rebuild switch --flake ~/nixos-config#nixos
 sudo nixos-rebuild switch --flake ~/nixos-config#t14
 ```
 
+Check for updates and update (bumps `flake.lock`, then rebuild):
+
+```
+nix flake update --extra-experimental-features "nix-command flakes" --flake ~/nixos-config
+sudo nixos-rebuild switch --flake ~/nixos-config#<machine>
+```
+
 ## Adding a new machine
 
 1. Boot a NixOS installer on the machine, partition/mount disks, then run:
@@ -32,11 +39,3 @@ sudo nixos-rebuild switch --flake ~/nixos-config#t14
    { imports = [ ./hardware-configuration.nix ]; networking.hostName = "<name>"; }
    ```
 4. Add `nixosConfigurations.<name> = mkHost ./hosts/<name>/default.nix;` in `flake.nix`.
-
-### Note on `t14`
-
-`hosts/t14/hardware-configuration.nix` in this repo is currently a **placeholder**
-(AMD-appropriate defaults — `kvm-amd`, `hardware.cpu.amd.updateMicrocode` — but
-fake disk UUIDs). It has not been generated on the real laptop yet. Before
-building `.#t14`, regenerate it per the steps above and replace the placeholder
-with the real file.

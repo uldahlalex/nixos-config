@@ -9,6 +9,7 @@
 
   networking.networkmanager.enable = true;
   nixpkgs.config.allowUnfree = true;
+  nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
   # JetBrains Toolbox downloads unpatched, generic-Linux binaries (e.g.
   # Rider) that expect a normal FHS environment. NixOS's stub-ld refuses
@@ -51,6 +52,8 @@
     # without it the backend process crashes on launch and the solution
     # just hangs "loading" forever (only the Java frontend shell is up).
     icu
+    libglvnd
+
   ];
 
   # Toolbox's generated CLI scripts (~/.local/share/JetBrains/Toolbox/scripts/*)
@@ -95,6 +98,24 @@
 
   console.keyMap = "dk-latin1";
 
+    environment.gnome.excludePackages = with pkgs; [
+    baobab      # disk usage analyzer
+    cheese      # photo booth
+    epiphany    # web browser
+    simple-scan # document scanner
+    totem       # video player
+    yelp        # help viewer
+    evince      # document viewer
+    geary       # email client
+    seahorse    # password manager
+    nautilus
+
+    # these should be self explanatory
+    gnome-calculator gnome-calendar gnome-characters gnome-clocks gnome-contacts
+    gnome-font-viewer gnome-maps gnome-music 
+    gnome-weather gnome-connections
+  ];
+
   users.users."alex" = {
     isNormalUser = true;
     description = "alex";
@@ -128,6 +149,14 @@
       python3
       pkg-config
       docker
+      docker-compose
+      openssl
+      prisma_6
+      nemo
+      git-lfs
+      jdk8
+      wl-clipboard
+
 ];
   };
 
