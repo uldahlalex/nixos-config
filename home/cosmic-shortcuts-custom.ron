@@ -1,0 +1,262 @@
+{
+    (
+        key: "1",
+        modifiers: [
+            Super,
+        ],
+    ): Disable,
+    (
+        key: "2",
+        modifiers: [
+            Super,
+        ],
+    ): Disable,
+    (
+        key: "3",
+        modifiers: [
+            Super,
+        ],
+    ): Disable,
+    (
+        key: "4",
+        modifiers: [
+            Super,
+        ],
+    ): Disable,
+    (
+        key: "5",
+        modifiers: [
+            Super,
+        ],
+    ): Disable,
+    (
+        key: "6",
+        modifiers: [
+            Super,
+        ],
+    ): Disable,
+    (
+        key: "7",
+        modifiers: [
+            Super,
+        ],
+    ): Disable,
+    (
+        key: "8",
+        modifiers: [
+            Super,
+        ],
+    ): Disable,
+    (
+        key: "9",
+        modifiers: [
+            Super,
+        ],
+    ): Disable,
+    (
+        key: "0",
+        modifiers: [
+            Super,
+        ],
+    ): Disable,
+    (
+        key: "Left",
+        modifiers: [
+            Super,
+            Ctrl,
+        ],
+    ): Disable,
+    (
+        key: "Down",
+        modifiers: [
+            Super,
+            Ctrl,
+        ],
+    ): Disable,
+    (
+        key: "Up",
+        modifiers: [
+            Super,
+            Ctrl,
+        ],
+    ): Disable,
+    (
+        key: "Right",
+        modifiers: [
+            Super,
+            Ctrl,
+        ],
+    ): Disable,
+    (
+        key: "h",
+        modifiers: [
+            Super,
+            Ctrl,
+        ],
+    ): Disable,
+    (
+        key: "j",
+        modifiers: [
+            Super,
+            Ctrl,
+        ],
+    ): Disable,
+    (
+        key: "k",
+        modifiers: [
+            Super,
+            Ctrl,
+        ],
+    ): Disable,
+    (
+        key: "l",
+        modifiers: [
+            Super,
+            Ctrl,
+        ],
+    ): Disable,
+    (
+        key: "1",
+        modifiers: [
+            Super,
+            Shift,
+        ],
+    ): Disable,
+    (
+        key: "2",
+        modifiers: [
+            Super,
+            Shift,
+        ],
+    ): Disable,
+    (
+        key: "3",
+        modifiers: [
+            Super,
+            Shift,
+        ],
+    ): Disable,
+    (
+        key: "4",
+        modifiers: [
+            Super,
+            Shift,
+        ],
+    ): Disable,
+    (
+        key: "5",
+        modifiers: [
+            Super,
+            Shift,
+        ],
+    ): Disable,
+    (
+        key: "6",
+        modifiers: [
+            Super,
+            Shift,
+        ],
+    ): Disable,
+    (
+        key: "7",
+        modifiers: [
+            Super,
+            Shift,
+        ],
+    ): Disable,
+    (
+        key: "8",
+        modifiers: [
+            Super,
+            Shift,
+        ],
+    ): Disable,
+    (
+        key: "9",
+        modifiers: [
+            Super,
+            Shift,
+        ],
+    ): Disable,
+    (
+        key: "0",
+        modifiers: [
+            Super,
+            Shift,
+        ],
+    ): Disable,
+    (
+        key: "Left",
+        modifiers: [
+            Super,
+            Shift,
+            Ctrl,
+        ],
+    ): Disable,
+    (
+        key: "Down",
+        modifiers: [
+            Super,
+            Shift,
+            Ctrl,
+        ],
+    ): Disable,
+    (
+        key: "Up",
+        modifiers: [
+            Super,
+            Shift,
+            Ctrl,
+        ],
+    ): Disable,
+    (
+        key: "Right",
+        modifiers: [
+            Super,
+            Shift,
+            Ctrl,
+        ],
+    ): Disable,
+    (
+        key: "h",
+        modifiers: [
+            Super,
+            Shift,
+            Ctrl,
+        ],
+    ): Disable,
+    (
+        key: "j",
+        modifiers: [
+            Super,
+            Shift,
+            Ctrl,
+        ],
+    ): Disable,
+    (
+        key: "k",
+        modifiers: [
+            Super,
+            Shift,
+            Ctrl,
+        ],
+    ): Disable,
+    (
+        key: "l",
+        modifiers: [
+            Super,
+            Shift,
+            Ctrl,
+        ],
+    ): Disable,
+    (
+        description: Some("Toggle clipboard manager"),
+        key: "v",
+        modifiers: [
+            Super,
+            Shift,
+        ],
+    ): Spawn(
+        "copyq toggle",
+    ),
+}

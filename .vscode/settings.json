@@ -1,0 +1,20 @@
+{
+  "nix.enableLanguageServer": true,
+  "nix.serverPath": "nixd",
+  "nix.formatterPath": "nixfmt",
+  "nix.serverSettings": {
+    "nixd": {
+      "formatting": {
+        "command": ["nixfmt"]
+      },
+      "options": {
+        "nixos": {
+          "expr": "(builtins.getFlake \"/home/alex/nixos-config\").nixosConfigurations.t14.options"
+        },
+        "home-manager": {
+          "expr": "(builtins.getFlake \"/home/alex/nixos-config\").nixosConfigurations.t14.options.home-manager.users.type.getSubOptions []"
+        }
+      }
+    }
+  }
+}

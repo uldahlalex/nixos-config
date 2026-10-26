@@ -8,9 +8,14 @@
       url = "github:nix-community/home-manager/release-26.05";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    cosmic-manager = {
+      url = "github:HeitorAugustoLN/cosmic-manager";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.home-manager.follows = "home-manager";
+    };
   };
 
-  outputs = { nixpkgs, nixpkgs-unstable, home-manager, ... }:
+  outputs = { nixpkgs, nixpkgs-unstable, home-manager, cosmic-manager, ... }:
     let
       system = "x86_64-linux";
       pkgs-unstable = import nixpkgs-unstable {
@@ -27,13 +32,31 @@
           {
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
-            home-manager.users.alex = import ./home.nix;
+            home-manager.users.alex = {
+              imports = [
+                ./home.nix
+                cosmic-manager.homeManagerModules.cosmic-manager
+              ];
+            };
           }
         ];
       };
+      pkgs = nixpkgs.legacyPackages.${system};
     in
     {
       nixosConfigurations.nixos = mkHost ./hosts/nixos/default.nix;
       nixosConfigurations.t14 = mkHost ./hosts/t14/default.nix;
+
+      formatter.${system} = pkgs.nixfmt;
+
+      devShells.${system}.default = pkgs.mkShell {
+        packages = with pkgs; [
+          nixd
+          nixfmt
+          statix
+          deadnix
+          nh
+        ];
+      };
     };
 }

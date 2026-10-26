@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, config, ... }:
 let
   oh-my-bash = pkgs.fetchFromGitHub {
     owner = "ohmybash";
@@ -25,6 +25,28 @@ let
         $out/share/gnome-shell/extensions/lid-helper@lid-helper/
     '';
   };
+
+  # Backend for the `resizer` CLI below: a GNOME Shell extension exposing a
+  # D-Bus method that lets you click a window to resize it.
+  resizer-extension = pkgs.stdenvNoCC.mkDerivation {
+    pname = "gnome-shell-extension-resizer";
+    version = "1.0.0";
+    src = ./gnome-extensions/resizer;
+    dontBuild = true;
+    installPhase = ''
+      mkdir -p $out/share/gnome-shell/extensions/resizer@local.dev
+      cp metadata.json extension.js \
+        $out/share/gnome-shell/extensions/resizer@local.dev/
+    '';
+  };
+
+  # CLI like `xkill`, but resizes: `resizer WIDTH HEIGHT` turns the cursor
+  # into a crosshair, then resizes whatever window you click next.
+  resizer-cli = pkgs.writeShellApplication {
+    name = "resizer";
+    runtimeInputs = [ pkgs.glib.bin ];
+    text = builtins.readFile ./home/resizer.sh;
+  };
 in
 {
   home.stateVersion = "26.05";
@@ -33,7 +55,38 @@ in
     jq
     gnomeExtensions.clipboard-indicator
     lid-helper
+    resizer-extension
+    resizer-cli
+
+    # Editing this repo: Nix language server (editor intellisense), formatter,
+    # lint/dead-code checkers, and a nicer `nixos-rebuild` wrapper. See README.md.
+    nixd
+    nixfmt
+    statix
+    deadnix
+    nh
   ];
+
+  programs.direnv = {
+    enable = true;
+    nix-direnv.enable = true;
+  };
+
+  # Runs CopyQ as a background service so its server is always up; without
+  # this, `copyq toggle` (bound to Super+Shift+V below) has nothing to
+  # connect to after login/reboot and silently fails.
+  services.copyq.enable = true;
+
+  wayland.desktopManager.cosmic.enable = true;
+
+  # Custom shortcuts (Super+1..9 disabled so they can't navigate off
+  # workspace 1, Super+Shift+V toggling the clipboard manager, etc.) are
+  # edited directly in that RON file instead of through cosmic-manager's
+  # `shortcuts` option, so that both hand edits and changes made via the
+  # COSMIC Settings GUI persist across `nixos-rebuild switch` instead of
+  # being clobbered by it. See README.md for details.
+  xdg.configFile."cosmic/com.system76.CosmicSettings.Shortcuts/v1/custom".source =
+    config.lib.file.mkOutOfStoreSymlink "/home/alex/nixos-config/home/cosmic-shortcuts-custom.ron";
 
   dconf.settings = {
     "org/gnome/shell" = {
@@ -41,6 +94,7 @@ in
         "clipboard-indicator@tudmotu.com"
         "gsconnect@andyholmes.github.io"
         "lid-helper@lid-helper"
+        "resizer@local.dev"
       ];
       favorite-apps = [ "org.gnome.Nautilus.desktop" ];
     };
@@ -110,59 +164,6 @@ in
 
   programs.bash = {
     enable = true;
-    bashrcExtra = ''
-      export OSH="$HOME/.oh-my-bash"
-      OSH_THEME="edsonarios"
-      source "$OSH/oh-my-bash.sh"
-      export EDITOR='code --wait'
-      # Backs up 2004scape (lostcity) account data (player saves + sqlite db) to ~/Downloads as a zip
-lostcity-backup() {
-    local engine=~/src/Server-289/engine
-    local out=~/Downloads/lostcity-backup-$(date +%Y%m%d-%H%M%S).zip
-    local tmp=$(mktemp -d)
-    mkdir -p "$tmp/data"
-    cp -r "$engine/data/players" "$tmp/data/"
-    sqlite3 "$engine/db.sqlite" ".backup '$tmp/db.sqlite'"
-    (cd "$tmp" && zip -rq9 "$out" .)
-    rm -rf "$tmp"
-    echo "$out"
-}
-
-# Restores 2004scape (lostcity) account data (player saves + sqlite db) from a lostcity-backup zip
-lostcity-restore() {
-    local zip="$1"
-    if [[ -z "$zip" || ! -f "$zip" ]]; then
-        echo "Usage: lostcity-restore <path-to-lostcity-backup.zip>" >&2
-        return 1
-    fi
-
-    local engine=~/src/Server-289/engine
-    if pgrep -f "$engine/node_modules/tsx/dist/preflight.cjs" >/dev/null; then
-        echo "Server is still running. Stop it first, it holds the save files and db open." >&2
-        return 1
-    fi
-
-    local tmp=$(mktemp -d)
-    if ! unzip -q "$zip" -d "$tmp"; then
-        echo "Failed to extract $zip" >&2
-        rm -rf "$tmp"
-        return 1
-    fi
-    if [[ ! -d "$tmp/data/players" || ! -f "$tmp/db.sqlite" ]]; then
-        echo "$zip doesn't look like a lostcity-backup archive (missing data/players or db.sqlite)" >&2
-        rm -rf "$tmp"
-        return 1
-    fi
-
-    local safety=$(lostcity-backup)
-    echo "Safety snapshot of current state saved to $safety before restoring."
-
-    rm -rf "$engine/data/players"
-    cp -r "$tmp/data/players" "$engine/data/"
-    cp "$tmp/db.sqlite" "$engine/db.sqlite"
-    rm -rf "$tmp"
-    echo "Restored from $zip"
-}
-    '';
+    bashrcExtra = builtins.readFile ./home/bashrc-extra.sh;
   };
 }

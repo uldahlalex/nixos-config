@@ -1,0 +1,7 @@
+{
+  "uuid": "resizer@local.dev",
+  "name": "Resizer",
+  "description": "Backend for the 'resizer' CLI: exposes a D-Bus method that lets you click a window to resize it to a given width/height.",
+  "shell-version": ["50"],
+  "url": ""
+}

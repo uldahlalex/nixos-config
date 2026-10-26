@@ -71,7 +71,8 @@
 
   services.displayManager.gdm.enable = true;
   services.desktopManager.gnome.enable = true;
-  services.displayManager.defaultSession = "gnome";
+  services.desktopManager.cosmic.enable = true;
+  services.displayManager.defaultSession = "cosmic";
 
 
   time.timeZone = "Europe/Copenhagen";
@@ -99,7 +100,6 @@
   console.keyMap = "dk-latin1";
 
     environment.gnome.excludePackages = with pkgs; [
-    baobab      # disk usage analyzer
     cheese      # photo booth
     epiphany    # web browser
     simple-scan # document scanner
@@ -167,5 +167,10 @@
 
 
   system.stateVersion = "26.05"; 
+  environment.sessionVariables = {
+
+COSMIC_DATA_CONTROL_ENABLED = "1";
+
+};
 
 }
