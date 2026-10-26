@@ -1,4 +1,4 @@
-{ pkgs, config, cosmic-ext-applet-clipboard-manager, ... }:
+{ pkgs, cosmic-ext-applet-clipboard-manager, ... }:
 let
   oh-my-bash = pkgs.fetchFromGitHub {
     owner = "ohmybash";
@@ -28,15 +28,6 @@ in
     nix-direnv.enable = true;
   };
 
-  # The whole COSMIC config directory is a symlink to a real, mutable
-  # directory in this repo rather than a generated Nix store path, so
-  # changing any COSMIC setting via the Settings GUI writes straight into
-  # the repo, and hand-editing a file there changes the live setting too.
-  # No `nixos-rebuild switch` needed for either direction. See README.md
-  # for details.
-  xdg.configFile."cosmic".source =
-    config.lib.file.mkOutOfStoreSymlink "/home/alex/nixos-config/home/cosmic-config";
-
   home.sessionPath = [
     # JetBrains Toolbox writes CLI launcher scripts (e.g. `rider`) here, but
     # Home Manager regenerates .bashrc on every switch, so Toolbox's own
@@ -54,6 +45,9 @@ in
 
   programs.bash = {
     enable = true;
-    bashrcExtra = builtins.readFile ./home/bashrc-extra.sh;
+    # Sourced at shell-startup time rather than inlined at build time, so
+    # editing home/bashrc-extra.sh takes effect in any new shell immediately
+    # — no `nixos-rebuild switch` needed. See README.md.
+    bashrcExtra = ''source "/home/alex/nixos-config/home/bashrc-extra.sh"'';
   };
 }
