@@ -2,12 +2,8 @@
   description = "alex's NixOS system configuration";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
-    home-manager = {
-      url = "github:nix-community/home-manager/release-26.05";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
     # Not (yet) in nixpkgs; only used for the cosmic-ext-applet-clipboard-manager
     # package below, not its overlay/NixOS module (that would replace nixpkgs'
     # own already-working COSMIC packaging). Left unpinned to our nixpkgs since
@@ -15,34 +11,33 @@
     nixos-cosmic.url = "github:lilyinstarlight/nixos-cosmic";
   };
 
-  outputs = { nixpkgs, nixpkgs-unstable, home-manager, nixos-cosmic, ... }:
+  outputs =
+    {
+      nixpkgs,
+      nixpkgs-unstable,
+      nixos-cosmic,
+      ...
+    }:
     let
       system = "x86_64-linux";
+      pkgs = nixpkgs.legacyPackages.${system};
       pkgs-unstable = import nixpkgs-unstable {
         inherit system;
         config.allowUnfree = true;
       };
-      mkHost = hostModule: nixpkgs.lib.nixosSystem {
-        inherit system;
-        specialArgs = { inherit pkgs-unstable; };
-        modules = [
-          ./configuration.nix
-          hostModule
-          home-manager.nixosModules.home-manager
-          {
-            home-manager.useGlobalPkgs = true;
-            home-manager.useUserPackages = true;
-            home-manager.extraSpecialArgs = {
-              cosmic-ext-applet-clipboard-manager =
-                nixos-cosmic.packages.${system}.cosmic-ext-applet-clipboard-manager;
-            };
-            home-manager.users.alex = {
-              imports = [ ./home.nix ];
-            };
-          }
-        ];
-      };
-      pkgs = nixpkgs.legacyPackages.${system};
+      mkHost =
+        hostModule:
+        nixpkgs.lib.nixosSystem {
+          inherit system;
+          specialArgs = {
+            inherit pkgs-unstable;
+            cosmicClipboardManager = nixos-cosmic.packages.${system}.cosmic-ext-applet-clipboard-manager;
+          };
+          modules = [
+            ./configuration.nix
+            hostModule
+          ];
+        };
     in
     {
       nixosConfigurations.nixos = mkHost ./hosts/nixos/default.nix;
