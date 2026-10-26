@@ -1,4 +1,4 @@
-{ pkgs, config, ... }:
+{ pkgs, config, cosmic-ext-applet-clipboard-manager, ... }:
 let
   oh-my-bash = pkgs.fetchFromGitHub {
     owner = "ohmybash";
@@ -12,6 +12,7 @@ in
 
   home.packages = with pkgs; [
     jq
+    cosmic-ext-applet-clipboard-manager
 
     # Editing this repo: Nix language server (editor intellisense), formatter,
     # lint/dead-code checkers, and a nicer `nixos-rebuild` wrapper. See README.md.
@@ -27,19 +28,14 @@ in
     nix-direnv.enable = true;
   };
 
-  # Runs CopyQ as a background service so its server is always up; without
-  # this, `copyq toggle` (bound to Super+Shift+V below) has nothing to
-  # connect to after login/reboot and silently fails.
-  services.copyq.enable = true;
-
   wayland.desktopManager.cosmic.enable = true;
 
   # Custom shortcuts (Super+1..9 disabled so they can't navigate off
-  # workspace 1, Super+Shift+V toggling the clipboard manager, etc.) are
-  # edited directly in that RON file instead of through cosmic-manager's
-  # `shortcuts` option, so that both hand edits and changes made via the
-  # COSMIC Settings GUI persist across `nixos-rebuild switch` instead of
-  # being clobbered by it. See README.md for details.
+  # workspace 1, etc.) are edited directly in that RON file instead of
+  # through cosmic-manager's `shortcuts` option, so that both hand edits and
+  # changes made via the COSMIC Settings GUI persist across
+  # `nixos-rebuild switch` instead of being clobbered by it. See README.md
+  # for details.
   xdg.configFile."cosmic/com.system76.CosmicSettings.Shortcuts/v1/custom".source =
     config.lib.file.mkOutOfStoreSymlink "/home/alex/nixos-config/home/cosmic-shortcuts-custom.ron";
 

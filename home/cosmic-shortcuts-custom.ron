@@ -250,16 +250,6 @@
         ],
     ): Disable,
     (
-        description: Some("Toggle clipboard manager"),
-        key: "v",
-        modifiers: [
-            Super,
-            Shift,
-        ],
-    ): Spawn(
-        "copyq toggle",
-    ),
-    (
         description: Some("Launch terminal"),
         key: "q",
         modifiers: [

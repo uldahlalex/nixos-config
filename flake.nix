@@ -13,9 +13,14 @@
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.home-manager.follows = "home-manager";
     };
+    # Not (yet) in nixpkgs; only used for the cosmic-ext-applet-clipboard-manager
+    # package below, not its overlay/NixOS module (that would replace nixpkgs'
+    # own already-working COSMIC packaging). Left unpinned to our nixpkgs since
+    # it needs its own anyway for `libcosmicAppHook`.
+    nixos-cosmic.url = "github:lilyinstarlight/nixos-cosmic";
   };
 
-  outputs = { nixpkgs, nixpkgs-unstable, home-manager, cosmic-manager, ... }:
+  outputs = { nixpkgs, nixpkgs-unstable, home-manager, cosmic-manager, nixos-cosmic, ... }:
     let
       system = "x86_64-linux";
       pkgs-unstable = import nixpkgs-unstable {
@@ -32,6 +37,10 @@
           {
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
+            home-manager.extraSpecialArgs = {
+              cosmic-ext-applet-clipboard-manager =
+                nixos-cosmic.packages.${system}.cosmic-ext-applet-clipboard-manager;
+            };
             home-manager.users.alex = {
               imports = [
                 ./home.nix
