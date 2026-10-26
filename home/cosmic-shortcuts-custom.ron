@@ -259,4 +259,13 @@
     ): Spawn(
         "copyq toggle",
     ),
+    (
+        description: Some("Launch terminal"),
+        key: "q",
+        modifiers: [
+            Super,
+        ],
+    ): Spawn(
+        "cosmic-term",
+    ),
 }

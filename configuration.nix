@@ -2,75 +2,24 @@
 { config, pkgs, pkgs-unstable, ... }:
 
 {
-   boot.loader.systemd-boot.configurationLimit = 10;
-
+  boot.loader.systemd-boot.configurationLimit = 10;
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
-
   networking.networkmanager.enable = true;
   nixpkgs.config.allowUnfree = true;
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
-
-  # JetBrains Toolbox downloads unpatched, generic-Linux binaries (e.g.
-  # Rider) that expect a normal FHS environment. NixOS's stub-ld refuses
-  # to run those directly ("Could not start dynamically linked
-  # executable"); nix-ld provides a real dynamic loader + library shim so
-  # they work, both from the CLI and from the GNOME app launcher.
+  system.stateVersion = "26.05"; 
   programs.nix-ld.enable = true;
-  # nix-ld's default library set has no GUI libs; Rider's JBR needs these
-  # to initialize its AWT/Swing toolkit (X11 + fontconfig + GTK stack).
-  programs.nix-ld.libraries = with pkgs; [
-    xorg.libX11
-    xorg.libXext
-    xorg.libXi
-    xorg.libXtst
-    xorg.libXrender
-    xorg.libXrandr
-    xorg.libxcb
-    xorg.libXcursor
-    xorg.libXfixes
-    xorg.libXdamage
-    fontconfig
-    freetype
-    glib
-    gtk3
-    cairo
-    pango
-    gdk-pixbuf
-    atk
-    at-spi2-atk
-    at-spi2-core
-    nss
-    nspr
-    dbus
-    alsa-lib
-    mesa
-    libdrm
-    wayland
-    libxkbcommon
-    # Rider's .NET backend (Rider.Backend) needs ICU for globalization;
-    # without it the backend process crashes on launch and the solution
-    # just hangs "loading" forever (only the Java frontend shell is up).
-    icu
-    libglvnd
 
-  ];
-
-  # Toolbox's generated CLI scripts (~/.local/share/JetBrains/Toolbox/scripts/*)
   # use a `#!/bin/bash` shebang, but NixOS only provides /bin/sh by default.
   systemd.tmpfiles.rules = [
     "L+ /bin/bash - - - - ${pkgs.bash}/bin/bash"
   ];
 
-  # GSConnect (KDE Connect) discovery + pairing
-  networking.firewall.allowedTCPPortRanges = [{ from = 1714; to = 1764; }];
-  networking.firewall.allowedUDPPortRanges = [{ from = 1714; to = 1764; }];
-
   virtualisation.docker.enable = true;
 
 
   services.displayManager.gdm.enable = true;
-  services.desktopManager.gnome.enable = true;
   services.desktopManager.cosmic.enable = true;
   services.displayManager.defaultSession = "cosmic";
 
@@ -99,22 +48,7 @@
 
   console.keyMap = "dk-latin1";
 
-    environment.gnome.excludePackages = with pkgs; [
-    cheese      # photo booth
-    epiphany    # web browser
-    simple-scan # document scanner
-    totem       # video player
-    yelp        # help viewer
-    evince      # document viewer
-    geary       # email client
-    seahorse    # password manager
-    nautilus
 
-    # these should be self explanatory
-    gnome-calculator gnome-calendar gnome-characters gnome-clocks gnome-contacts
-    gnome-font-viewer gnome-maps gnome-music 
-    gnome-weather gnome-connections
-  ];
 
   users.users."alex" = {
     isNormalUser = true;
@@ -136,14 +70,9 @@
       sqlite
       zip
       zoom-us
-      gnomeExtensions.gsconnect
       dotnet-sdk_10
-      # nixos-26.05's jetbrains-toolbox points at a deleted CDN URL;
-      # nixpkgs-unstable already has the fix (nixpkgs#571434).
-      # pkgs-unstable.jetbrains-toolbox
       jetbrains.rider
       jetbrains.webstorm
-      # node-gyp / native npm package builds expect these on PATH.
       gcc
       gnumake
       python3
@@ -165,12 +94,8 @@
     setSocketVariable = true;
   };
 
-
-  system.stateVersion = "26.05"; 
   environment.sessionVariables = {
-
-COSMIC_DATA_CONTROL_ENABLED = "1";
-
-};
+    COSMIC_DATA_CONTROL_ENABLED = "1";
+  };
 
 }
