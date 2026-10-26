@@ -28,16 +28,14 @@ in
     nix-direnv.enable = true;
   };
 
-  wayland.desktopManager.cosmic.enable = true;
-
-  # Custom shortcuts (Super+1..9 disabled so they can't navigate off
-  # workspace 1, etc.) are edited directly in that RON file instead of
-  # through cosmic-manager's `shortcuts` option, so that both hand edits and
-  # changes made via the COSMIC Settings GUI persist across
-  # `nixos-rebuild switch` instead of being clobbered by it. See README.md
+  # The whole COSMIC config directory is a symlink to a real, mutable
+  # directory in this repo rather than a generated Nix store path, so
+  # changing any COSMIC setting via the Settings GUI writes straight into
+  # the repo, and hand-editing a file there changes the live setting too.
+  # No `nixos-rebuild switch` needed for either direction. See README.md
   # for details.
-  xdg.configFile."cosmic/com.system76.CosmicSettings.Shortcuts/v1/custom".source =
-    config.lib.file.mkOutOfStoreSymlink "/home/alex/nixos-config/home/cosmic-shortcuts-custom.ron";
+  xdg.configFile."cosmic".source =
+    config.lib.file.mkOutOfStoreSymlink "/home/alex/nixos-config/home/cosmic-config";
 
   home.sessionPath = [
     # JetBrains Toolbox writes CLI launcher scripts (e.g. `rider`) here, but
