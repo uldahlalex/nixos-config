@@ -1,19 +1,10 @@
 {
   config,
-  lib,
   pkgs,
   pkgs-unstable,
   cosmicClipboardManager,
   ...
 }:
-let
-  oh-my-bash = pkgs.fetchFromGitHub {
-    owner = "ohmybash";
-    repo = "oh-my-bash";
-    rev = "abf846186ab0a8a41ec5888e827ece6277dfe446";
-    hash = "sha256-tlYKhz7baZ02FcHlYMnLQsgjEsN/K+z3+UWre4mS5Qs=";
-  };
-in
 {
   boot.loader.systemd-boot.configurationLimit = 10;
   boot.loader.systemd-boot.enable = true;
@@ -32,39 +23,10 @@ in
     nix-direnv.enable = true;
   };
 
-  # Fish-like interactive bash: ble.sh replaces readline with inline history
-  # suggestions, syntax highlighting and menu completion. It must be sourced
-  # before anything else touches the prompt (oh-my-bash, bash-preexec) and
-  # attached as the very last step, hence the mkBefore/mkAfter split.
-  programs.bash.interactiveShellInit = lib.mkMerge [
-    (lib.mkBefore ''
-      [[ $- == *i* ]] && source "${pkgs.blesh}/share/blesh/ble.sh" --attach=none
-    '')
-    ''
-      # JetBrains Toolbox writes CLI launcher scripts (e.g. `rider`) here.
-      export PATH="$HOME/.local/share/JetBrains/Toolbox/scripts:$PATH"
-      source "/home/alex/nixos-config/scripts/bashrc-extra.sh"
-      # Flag/subcommand completions for hundreds of CLIs (git, docker, gh, ...).
-      source <(${pkgs.carapace}/bin/carapace _carapace bash)
-      # `z <fragment>` jumps to the best-matching frequently used directory.
-      # Initialised here rather than via programs.zoxide, whose hook would
-      # otherwise land after ble-attach.
-      eval "$(${pkgs.zoxide}/bin/zoxide init bash)"
-    ''
-    (lib.mkAfter ''
-      [[ ''${BLE_VERSION-} ]] && ble-attach
-    '')
-  ];
-
-  # Ctrl-R fuzzy history, Ctrl-T file picker, Alt-C cd into subdirectory.
-  programs.fzf.keybindings = true;
-
   # Toolbox's generated CLI scripts use a `#!/bin/bash` shebang, but NixOS
-  # only provides /bin/sh by default. The oh-my-bash symlink pins it to an
-  # exact commit, same idea as a package version pin.
+  # only provides /bin/sh by default.
   systemd.tmpfiles.rules = [
     "L+ /bin/bash - - - - ${pkgs.bash}/bin/bash"
-    "L+ /home/alex/.oh-my-bash - alex users - ${oh-my-bash}"
   ];
 
   virtualisation.docker.enable = true;
@@ -105,7 +67,7 @@ in
       "docker"
     ];
     packages = with pkgs; [
-      kitty
+      kdePackages.konsole
       brave
       claude-code
       vscode
@@ -136,6 +98,8 @@ in
       jdk8
       wl-clipboard
       jq
+      fzf
+      zoxide
       cosmicClipboardManager
       # Super+V clipboard history (see custom shortcut below). The applet
       # above has no way to be triggered by a keybind (open upstream issue:
