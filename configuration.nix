@@ -29,11 +29,50 @@
     "L+ /bin/bash - - - - ${pkgs.bash}/bin/bash"
   ];
 
+  # Oh My Bash isn't packaged in nixpkgs, so pin it from GitHub and expose it
+  # at a stable path; ~/.bashrc does the actual configuring and sourcing.
+  # The store copy is read-only, so bump `rev`/`hash` here to update.
+  environment.etc."oh-my-bash".source = pkgs.fetchFromGitHub {
+    owner = "ohmybash";
+    repo = "oh-my-bash";
+    rev = "44e931974d6083b3d3723213d0ff5c8d87909571";
+    hash = "sha256-4ezVaCSfP2Dr+8et91avRgfg5QcJ0Q+BDb/j5L2Jirk=";
+  };
+
+  # Nicer terminal font than the DejaVu Sans Mono fallback; the Nerd Font
+  # variant also carries the icon glyphs Oh My Bash themes use.
+  fonts.packages = [ pkgs.nerd-fonts.jetbrains-mono ];
+  fonts.fontconfig.defaultFonts.monospace = [ "JetBrainsMono Nerd Font" ];
+
   virtualisation.docker.enable = true;
 
   services.displayManager.gdm.enable = true;
   services.desktopManager.cosmic.enable = true;
   services.displayManager.defaultSession = "cosmic";
+
+  # Second session to try out alongside COSMIC (pick "Hyprland" in GDM).
+  # Hyprland is only the compositor; Quickshell draws the bar/widgets from
+  # ~/.config/quickshell, and fuzzel is a stopgap app launcher.
+  programs.hyprland.enable = true;
+  environment.systemPackages = with pkgs; [
+    quickshell
+    fuzzel
+  ];
+
+  # cosmic-client-toolkit destroys a screencopy frame only after its handler
+  # returns, but cosmic-workspaces' handler already requests the next frame,
+  # so the compositor kills the overview (Super+W) with "create_frame sent
+  # before the previous frame". Destroy first instead; drop once fixed upstream.
+  nixpkgs.overlays = [
+    (final: prev: {
+      cosmic-workspaces-epoch = prev.cosmic-workspaces-epoch.overrideAttrs (old: {
+        postPatch = (old.postPatch or "") + ''
+          patch -p1 -d "$NIX_BUILD_TOP/$(stripHash $cargoDeps)"/source-git-*/cosmic-client-toolkit-0.2.0 \
+            < ${./patches/cctk-destroy-frame-first.patch}
+        '';
+      });
+    })
+  ];
 
   time.timeZone = "Europe/Copenhagen";
 
@@ -67,6 +106,8 @@
       "docker"
     ];
     packages = with pkgs; [
+      wordcraft
+      gridcraft
       kdePackages.konsole
       brave
       claude-code
