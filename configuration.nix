@@ -48,15 +48,18 @@
 
   services.displayManager.gdm.enable = true;
   services.desktopManager.cosmic.enable = true;
-  services.displayManager.defaultSession = "cosmic";
+  services.displayManager.defaultSession = "hyprland";
 
-  # Second session to try out alongside COSMIC (pick "Hyprland" in GDM).
+  # Default session; COSMIC stays installed as a fallback (pick it in GDM).
   # Hyprland is only the compositor; Quickshell draws the bar/widgets from
   # ~/.config/quickshell, and fuzzel is a stopgap app launcher.
   programs.hyprland.enable = true;
   environment.systemPackages = with pkgs; [
     quickshell
     fuzzel
+    hyprmod # settings GUI incl. Monitors page; writes only hyprland-gui.lua
+    waypaper # wallpaper picker GUI; drives awww below
+    awww # wallpaper daemon (formerly swww)
   ];
 
   # cosmic-client-toolkit destroys a screencopy frame only after its handler
@@ -108,7 +111,6 @@
     packages = with pkgs; [
       wordcraft
       gridcraft
-      kdePackages.konsole
       brave
       claude-code
       vscode
@@ -142,13 +144,7 @@
       fzf
       zoxide
       cosmicClipboardManager
-      # Super+V clipboard history (see custom shortcut below). The applet
-      # above has no way to be triggered by a keybind (open upstream issue:
-      # cosmic-utils/clipboard-manager#222), so CopyQ fills that gap instead.
       copyq
-
-      # Editing this repo: Nix language server (editor intellisense), formatter,
-      # lint/dead-code checkers, and a nicer `nixos-rebuild` wrapper. See README.md.
       nixd
       nixfmt
       statix
