@@ -48,18 +48,26 @@
 
   services.displayManager.gdm.enable = true;
   services.desktopManager.cosmic.enable = true;
-  services.displayManager.defaultSession = "hyprland";
+  services.displayManager.defaultSession = "cosmic";
 
-  # Default session; COSMIC stays installed as a fallback (pick it in GDM).
-  # Hyprland is only the compositor; Quickshell draws the bar/widgets from
-  # ~/.config/quickshell, and fuzzel is a stopgap app launcher.
+  # Hyprland and labwc stay installed as alternatives (pick them in GDM).
+  # Hyprland is only the compositor; Dux Shell (below) is the desktop on top.
   programs.hyprland.enable = true;
+
+  # Alternative session: a stacking (Openbox-style) compositor where every
+  # window floats. Config in ~/.config/labwc.
+  programs.labwc.enable = true;
+
+  # Dux Shell (formerly DankMaterialShell): complete Quickshell-based desktop
+  # shell. Started from hyprland.lua (`local shell = "dms"`) instead of its
+  # systemd unit, which would also launch it inside the COSMIC session.
+  programs.dux-shell = {
+    enable = true;
+    systemd.enable = false;
+  };
   environment.systemPackages = with pkgs; [
-    quickshell
-    fuzzel
-    hyprmod # settings GUI incl. Monitors page; writes only hyprland-gui.lua
-    waypaper # wallpaper picker GUI; drives awww below
-    awww # wallpaper daemon (formerly swww)
+    quickshell # runs the Exposé overlay in ~/.config/quickshell/expose
+    wlr-randr # turn outputs on/off from the labwc session
   ];
 
   # cosmic-client-toolkit destroys a screencopy frame only after its handler
