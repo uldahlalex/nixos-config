@@ -4,18 +4,12 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
-    # Not (yet) in nixpkgs; only used for the cosmic-ext-applet-clipboard-manager
-    # package below, not its overlay/NixOS module (that would replace nixpkgs'
-    # own already-working COSMIC packaging). Left unpinned to our nixpkgs since
-    # it needs its own anyway for `libcosmicAppHook`.
-    nixos-cosmic.url = "github:lilyinstarlight/nixos-cosmic";
   };
 
   outputs =
     {
       nixpkgs,
       nixpkgs-unstable,
-      nixos-cosmic,
       ...
     }:
     let
@@ -31,7 +25,6 @@
           inherit system;
           specialArgs = {
             inherit pkgs-unstable;
-            cosmicClipboardManager = nixos-cosmic.packages.${system}.cosmic-ext-applet-clipboard-manager;
           };
           modules = [
             ./configuration.nix

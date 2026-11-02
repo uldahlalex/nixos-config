@@ -2,7 +2,6 @@
   config,
   pkgs,
   pkgs-unstable,
-  cosmicClipboardManager,
   ...
 }:
 {
@@ -29,9 +28,7 @@
     "L+ /bin/bash - - - - ${pkgs.bash}/bin/bash"
   ];
 
-  # Oh My Bash isn't packaged in nixpkgs, so pin it from GitHub and expose it
-  # at a stable path; ~/.bashrc does the actual configuring and sourcing.
-  # The store copy is read-only, so bump `rev`/`hash` here to update.
+
   environment.etc."oh-my-bash".source = pkgs.fetchFromGitHub {
     owner = "ohmybash";
     repo = "oh-my-bash";
@@ -39,8 +36,7 @@
     hash = "sha256-4ezVaCSfP2Dr+8et91avRgfg5QcJ0Q+BDb/j5L2Jirk=";
   };
 
-  # Nicer terminal font than the DejaVu Sans Mono fallback; the Nerd Font
-  # variant also carries the icon glyphs Oh My Bash themes use.
+
   fonts.packages = [ pkgs.nerd-fonts.jetbrains-mono ];
   fonts.fontconfig.defaultFonts.monospace = [ "JetBrainsMono Nerd Font" ];
 
@@ -50,30 +46,6 @@
   services.desktopManager.cosmic.enable = true;
   services.displayManager.defaultSession = "cosmic";
 
-  # Hyprland and labwc stay installed as alternatives (pick them in GDM).
-  # Hyprland is only the compositor; Dux Shell (below) is the desktop on top.
-  programs.hyprland.enable = true;
-
-  # Alternative session: a stacking (Openbox-style) compositor where every
-  # window floats. Config in ~/.config/labwc.
-  programs.labwc.enable = true;
-
-  # Dux Shell (formerly DankMaterialShell): complete Quickshell-based desktop
-  # shell. Started from hyprland.lua (`local shell = "dms"`) instead of its
-  # systemd unit, which would also launch it inside the COSMIC session.
-  programs.dux-shell = {
-    enable = true;
-    systemd.enable = false;
-  };
-  environment.systemPackages = with pkgs; [
-    quickshell # runs the Exposé overlay in ~/.config/quickshell/expose
-    wlr-randr # turn outputs on/off from the labwc session
-  ];
-
-  # cosmic-client-toolkit destroys a screencopy frame only after its handler
-  # returns, but cosmic-workspaces' handler already requests the next frame,
-  # so the compositor kills the overview (Super+W) with "create_frame sent
-  # before the previous frame". Destroy first instead; drop once fixed upstream.
   nixpkgs.overlays = [
     (final: prev: {
       cosmic-workspaces-epoch = prev.cosmic-workspaces-epoch.overrideAttrs (old: {
@@ -143,15 +115,13 @@
       docker
       docker-compose
       openssl
-      prisma_6
-      nemo
+      #prisma_6
+      #nemo
       git-lfs
       jdk8
-      wl-clipboard
       jq
       fzf
       zoxide
-      cosmicClipboardManager
       copyq
       nixd
       nixfmt
