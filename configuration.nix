@@ -2,6 +2,7 @@
   config,
   pkgs,
   pkgs-unstable,
+  pkgs-brave,
   ...
 }:
 {
@@ -20,6 +21,15 @@
   programs.direnv = {
     enable = true;
     nix-direnv.enable = true;
+  };
+
+  # Evolution mail/calendar client for Microsoft 365. evolution-ews provides
+  # the "Exchange Web Services" and "Microsoft 365" (Graph API) account types;
+  # it must be registered as a plugin so evolution-data-server can load it.
+  # OAuth tokens are stored in gnome-keyring (enabled by the COSMIC module).
+  programs.evolution = {
+    enable = true;
+    plugins = [ pkgs.evolution-ews ];
   };
 
   # Toolbox's generated CLI scripts use a `#!/bin/bash` shebang, but NixOS
@@ -89,9 +99,8 @@
       "docker"
     ];
     packages = with pkgs; [
-      wordcraft
-      gridcraft
-      brave
+      onlyoffice-desktopeditors
+      pkgs-brave.brave
       claude-code
       vscode
       git
@@ -108,13 +117,16 @@
       dotnet-sdk_10
       jetbrains.rider
       jetbrains.webstorm
+      kdePackages.kdenlive
       gcc
       gnumake
       python3
+      enlightenment.terminology
       pkg-config
       docker
       docker-compose
       openssl
+      wl-clipboard
       #prisma_6
       #nemo
       git-lfs
