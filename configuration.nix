@@ -47,6 +47,17 @@
   };
 
 
+  # Steam with Proton. The module also enables 32-bit graphics drivers
+  # (hardware.graphics.enable32Bit) and the udev rules for controllers.
+  # Valve's Proton versions are downloaded by Steam itself; proton-ge-bin
+  # adds GE-Proton as an extra choice under a game's Compatibility settings.
+  programs.steam = {
+    enable = true;
+    extraCompatPackages = [ pkgs.proton-ge-bin ];
+  };
+  # Lets games request performance mode via `gamemoderun %command%`.
+  programs.gamemode.enable = true;
+
   fonts.packages = [ pkgs.nerd-fonts.jetbrains-mono ];
   fonts.fontconfig.defaultFonts.monospace = [ "JetBrainsMono Nerd Font" ];
 
@@ -115,7 +126,17 @@
       zip
       zoom-us
       dotnet-sdk_10
-      jetbrains.rider
+      # Pinned to JetBrains' newer 2026.2.x patch: nixpkgs is stuck on 2026.2.4 (NixOS/nixpkgs#590447).
+      # Remove once nixpkgs ships a newer Rider.
+      (jetbrains.rider.overrideAttrs (old: {
+        version = "2026.2.5.1";
+        src = fetchurl {
+          url = "https://download.jetbrains.com/rider/JetBrains.Rider-2026.2.5.1.tar.gz";
+          hash = "sha256-VJ5iE9NoJUp+HYc017wg6ufuBSqJj1OiV+DGDuuJvK8=";
+        };
+        # The CVE is in the bundled .NET runtime, which nixpkgs replaces with its own (10.0.15)
+        meta = old.meta // { knownVulnerabilities = [ ]; };
+      }))
       jetbrains.webstorm
       kdePackages.kdenlive
       gcc
